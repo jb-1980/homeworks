@@ -1,0 +1,37 @@
+[
+  {
+    "name": "$1.00",
+    "icon": "money_bag",
+    "cost": 100
+  },
+  {
+    "name": "15 min. Computer",
+    "icon": "computer",
+    "cost": 20
+  },
+  {
+    "name": "30 min. Computer",
+    "icon": "computer",
+    "cost": 40
+  },
+  {
+    "name": "30 min. TV",
+    "icon": "tv",
+    "cost": 20
+  },
+  {
+    "name": "60 min. TV",
+    "icon": "tv",
+    "cost": 40
+  },
+  {
+    "name": "20 min. iPad",
+    "icon": "ipad",
+    "cost": 20
+  },
+  {
+    "name": "40 min. iPad",
+    "icon": "ipad",
+    "cost": 40
+  }
+]

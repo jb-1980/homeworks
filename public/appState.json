@@ -1,0 +1,45 @@
+{
+  "members": [
+    {
+      "id": "",
+      "name": "",
+      "icon": "",
+      "points": 0
+    }
+  ],
+  "chores": [
+    {
+      "id": "",
+      "name": "",
+      "icon": "",
+      "points": 0
+    }
+  ],
+  "redeemables": [
+    {
+      "id": "",
+      "name": "",
+      "icon": "",
+      "cost": ""
+    }
+  ],
+  "schedules": [
+    {
+      "memberId": "",
+      "assignments": [
+        {
+          "date": "",
+          "choreId": "",
+          "completed": false
+        }
+      ]
+    }
+  ],
+  "redeemHistory": [
+    {
+      "memberId": "",
+      "date": "",
+      "redeemableId": ""
+    }
+  ]
+}
