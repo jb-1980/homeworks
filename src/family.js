@@ -1,43 +1,20 @@
 import React from "react"
-import ReactModal from "react-modal"
 import { Link } from "react-router-dom"
 import { StyleSheet, css } from "aphrodite"
 import { themeColors } from "./utils"
-import IconSelector from "./components/icon-selector"
-import { Query, Mutation } from "react-apollo"
+import FamilyModal from "./components/family-modal"
+import { Query } from "react-apollo"
 
 import { GET_HOUSEHOLD } from "./apollo/queries"
-import { SAVE_MEMBER } from "./apollo/mutations"
-
-ReactModal.setAppElement("#root")
 
 export default class Family extends React.Component {
   state = {
     modalOpen: false,
-    addedUserName: "",
-    avatars: [
-      "batgirl",
-      "batman",
-      "captain-america",
-      "spider-girl",
-      "spiderman",
-      "supergirl",
-      "superman",
-      "wonder-woman",
-    ],
-    selectedAvatar: "batgirl",
   }
 
   handleOpenModal = () => this.setState({ modalOpen: true })
 
   handleCloseModal = () => this.setState({ modalOpen: false })
-
-  updateAddUserName = event => {
-    const addedUserName = event.target.value
-    this.setState({ addedUserName })
-  }
-
-  updateAvatar = selectedAvatar => this.setState({ selectedAvatar })
 
   render() {
     const portraits = (
@@ -85,59 +62,10 @@ export default class Family extends React.Component {
 
     return (
       <React.Fragment>
-        <ReactModal isOpen={this.state.modalOpen}>
-          <Mutation
-            mutation={SAVE_MEMBER}
-            update={(cache, { data: { addMember } }) => {
-              const { household } = cache.readQuery({ query: GET_HOUSEHOLD })
-              cache.writeQuery({
-                query: GET_HOUSEHOLD,
-                data: { household: [...household, addMember] },
-              })
-            }}
-          >
-            {(addMember, { data }) => (
-              <React.Fragment>
-                <div className={css(styles.modalContainer)}>
-                  <div>
-                    <IconSelector
-                      icons={this.state.avatars}
-                      clickHandler={this.updateAvatar}
-                    />
-
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="member-name"
-                      placeholder="Name"
-                      value={this.state.addedUserName}
-                      onChange={this.updateAddUserName}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </div>
-                <div style={{ float: "right" }}>
-                  <button
-                    onClick={() => {
-                      addMember({
-                        variables: {
-                          name: this.state.addedUserName,
-                          img: this.state.selectedAvatar,
-                          pts: 0,
-                        },
-                      })
-                      this.setState({ addedUserName: "" })
-                      this.handleCloseModal()
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button onClick={this.handleCloseModal}>Close</button>
-                </div>
-              </React.Fragment>
-            )}
-          </Mutation>
-        </ReactModal>
+        <FamilyModal
+          modalOpen={this.state.modalOpen}
+          onRequestClose={this.handleCloseModal}
+        />
         <section>
           <div className={css(styles.container)}>{portraits}</div>
           <button
@@ -182,21 +110,6 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: "1rem",
     color: themeColors.textOnSecondary,
-  },
-  modalContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "90%",
-  },
-  modalAvatarImg: {
-    height: 200,
-  },
-  modalAvatarSelectorButton: {
-    fontSize: "5rem",
-    background: "none",
-    border: 0,
-    color: themeColors.primaryDark,
   },
   links: {
     textDecoration: "none",

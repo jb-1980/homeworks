@@ -18,8 +18,10 @@ const styles = {
   background: "inherit",
 }
 
+const { protocol, hostname } = window.location
+
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  uri: `${protocol}//${hostname}:4000/graphql`,
 })
 
 const App = () => (

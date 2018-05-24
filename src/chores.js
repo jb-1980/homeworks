@@ -1,89 +1,62 @@
 import React from "react"
 import ReactModal from "react-modal"
+import { Query, Mutation } from "react-apollo"
+import { StyleSheet, css } from "aphrodite"
+import { themeColors } from "./utils"
+import { GET_CHORES } from "./apollo/queries"
+import { CREATE_CHORE } from "./apollo/mutations"
 
 ReactModal.setAppElement("#root")
 
 export default class Chores extends React.Component {
-  state = {
-    chores: [
-      {
-        name: "Lavar trastes",
-        icon: "https://via.placeholder.com/100x100",
-        description: "Ayudar a Mommy o Daddy lavar los trastes",
-        pts: 10,
-      },
-      {
-        name: "Sacar basura",
-        icon: "https://via.placeholder.com/100x100",
-        description: "Sacar la basura de los dos baños",
-        pts: 5,
-      },
-      {
-        name: "Tarea",
-        icon: "https://via.placeholder.com/100x100",
-        description: "Haz tu tarea de la escuela",
-        pts: 5,
-      },
-      {
-        name: "Dar agua a las plantas",
-        icon: "https://via.placeholder.com/100x100",
-        description: "Dar agua a las plantas",
-        pts: 7,
-      },
-      {
-        name: "Lavar calcetines",
-        icon: "https://via.placeholder.com/100x100",
-        description: "Poner las calcetines en la secadora",
-        pts: 10,
-      },
-    ],
-    addedChore: {
-      name: "",
-      icon: "https://via.placeholder.com/100x100",
-      description: "",
-      pts: 0,
-    },
+  defaultState = {
+    modalOpen: false,
+    choreName: "",
+    choreImg: "https://via.placeholder.com/100x120",
+    choreDescription: "",
+    chorePts: 0,
   }
+
+  state = this.defaultState
+
   handleOpenModal = () => this.setState({ modalOpen: true })
 
   handleCloseModal = () => this.setState({ modalOpen: false })
 
-  updateAddChoreName = event => {
-    const name = event.target.value
-    this.setState(({ addedChore }) => ({ addedChore: { ...addedChore, name } }))
-  }
+  updateChoreName = event => this.setState({ choreName: event.target.value })
 
-  updateAddChoreDescription = event => {
-    const description = event.target.value
-    this.setState(({ addedChore }) => ({
-      addedChore: { ...addedChore, description },
-    }))
-  }
+  updateChoreImg = choreImg => this.setState({ choreImg })
 
-  updateAddChorePoints = event => {
-    const pts = Number(event.target.value)
-    this.setState(({ addedChore }) => ({ addedChore: { ...addedChore, pts } }))
-  }
+  updateChoreDescription = event =>
+    this.setState({ choreDescription: event.target.value })
 
-  saveChore = () =>
-    this.setState(
-      ({ chores, addedChore }) => ({
-        chores: [...chores, addedChore],
-        addedChore: { ...addedChore, name: "", description: "", pts: 0 },
-      }),
-      this.handleCloseModal
-    )
+  updateChorePoints = event =>
+    this.setState({ chorePts: Number(event.target.value) })
+
+  resetState = () => this.setState(this.defaultState)
 
   render() {
-    const chores = this.state.chores.map(chore => (
-      <div key={chore.name} className="card" style={{ width: 100 }}>
-        <img src={chore.icon} alt="placeholder" />
-        <div className="card-body">
-          <div>{chore.name}</div>
-          <div>{chore.pts}</div>
-        </div>
-      </div>
-    ))
+    const chores = (
+      <Query query={GET_CHORES}>
+        {({ loading, error, data }) => {
+          if (loading) return <div>Fetching data ...</div>
+          if (error) return <div>Error fetching data!</div>
+
+          const chores = data.chores === null ? [] : data.chores
+          return chores.map(chore => (
+            <div className={css(styles.memberContainer)}>
+              <img
+                src={"https://via.placeholder.com/100x120" /*chore.img*/}
+                alt={chore.img}
+                style={{ width: 100, height: 120 }}
+              />
+              <div>{chore.name}</div>
+              <div className={css(styles.pts)}>{chore.pts}</div>
+            </div>
+          ))
+        }}
+      </Query>
+    )
     return (
       <React.Fragment>
         <ReactModal isOpen={this.state.modalOpen}>
@@ -106,8 +79,8 @@ export default class Chores extends React.Component {
                     type="text"
                     className="form-control"
                     placeholder="Name"
-                    value={this.state.addedChore.name}
-                    onChange={this.updateAddChoreName}
+                    value={this.state.choreName}
+                    onChange={this.updateChoreName}
                   />
                 </div>
                 <div className="form-group">
@@ -115,8 +88,8 @@ export default class Chores extends React.Component {
                     type="text"
                     className="form-control"
                     placeholder="Description"
-                    value={this.state.addedChore.description}
-                    onChange={this.updateAddChoreDescription}
+                    value={this.state.choreDescription}
+                    onChange={this.updateChoreDescription}
                   />
                 </div>
                 <div className="form-group">
@@ -125,15 +98,45 @@ export default class Chores extends React.Component {
                     type="number"
                     id="points"
                     className="form-control"
-                    value={this.state.addedChore.pts}
-                    onChange={this.updateAddChorePoints}
+                    value={this.state.chorePts}
+                    onChange={this.updateChorePoints}
                   />
                 </div>
               </div>
             </div>
           </div>
           <div style={{ float: "right" }}>
-            <button onClick={this.saveChore}>Save</button>
+            <Mutation
+              mutation={CREATE_CHORE}
+              update={(cache, { data: { createChore } }) => {
+                const { chores } = cache.readQuery({
+                  query: GET_CHORES,
+                })
+                cache.writeQuery({
+                  query: GET_CHORES,
+                  data: { chores: [...chores, createChore] },
+                })
+              }}
+              onCompleted={this.resetState}
+            >
+              {(createChore, { data }) => (
+                <button
+                  onClick={() =>
+                    createChore({
+                      variables: {
+                        name: this.state.choreName,
+                        img: this.state.choreImg,
+                        description: this.state.choreDescription,
+                        pts: this.state.chorePts,
+                      },
+                    })
+                  }
+                >
+                  Save
+                </button>
+              )}
+            </Mutation>
+
             <button onClick={this.handleCloseModal}>Close</button>
           </div>
         </ReactModal>
@@ -157,3 +160,70 @@ export default class Chores extends React.Component {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    alignItems: "space-around",
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  memberContainer: {
+    width: 200,
+    height: 120,
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
+    background: themeColors.primaryLight,
+    boxShadow: "rgba(0, 0, 0, 0.05) 0px 1px 3px 0px",
+    borderRadius: 5,
+    userSelect: "none",
+    cursor: "pointer",
+    margin: 20,
+  },
+  pts: {
+    position: "absolute",
+    left: 160,
+    top: -5,
+    background: themeColors.secondary,
+    color: themeColors.textOnSecondary,
+    boxShadow: "rgba(0, 0, 0, 0.15) 0px 1px 3px 0px",
+    border: "thin solid white",
+    borderRadius: 15,
+    minWidth: 30,
+    padding: "2px 8px",
+  },
+  addFamilyButton: {
+    background: themeColors.secondary,
+    border: "white",
+    borderRadius: 20,
+    width: 200,
+    height: 50,
+    fontSize: "1rem",
+    color: themeColors.textOnSecondary,
+  },
+  modalContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "90%",
+  },
+  modalAvatarImg: {
+    height: 200,
+  },
+  modalAvatarSelectorButton: {
+    fontSize: "5rem",
+    background: "none",
+    border: 0,
+    color: themeColors.primaryDark,
+  },
+  links: {
+    textDecoration: "none",
+    color: "inherit",
+    ":hover": {
+      opacity: "0.9",
+    },
+  },
+})

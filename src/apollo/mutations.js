@@ -1,8 +1,19 @@
 import gql from "graphql-tag"
 
-export const SAVE_MEMBER = gql`
-  mutation addMember($name: String!, $img: String!, $pts: Int) {
-    addMember(name: $name, img: $img, pts: $pts) {
+export const CREATE_MEMBER = gql`
+  mutation createMember($name: String!, $img: String!, $pts: Int) {
+    createMember(name: $name, img: $img, pts: $pts) {
+      id
+      name
+      img
+      pts
+    }
+  }
+`
+
+export const UPDATE_MEMBER = gql`
+  mutation updateMember($id: ID!, $name: String, $img: String, $pts: Int) {
+    updateMember(id: $id, name: $name, img: $img, pts: $pts) {
       id
       name
       img
@@ -19,9 +30,9 @@ export const DELETE_MEMBER = gql`
   }
 `
 
-export const SAVE_REDEEMABLE = gql`
-  mutation addRedeemable($name: String!, $img: String!, $cost: Int!) {
-    addRedeemable(name: $name, img: $img, cost: $cost) {
+export const CREATE_REDEEMABLE = gql`
+  mutation createRedeemable($name: String!, $img: String!, $cost: Int!) {
+    createRedeemable(name: $name, img: $img, cost: $cost) {
       id
       name
       img
@@ -45,6 +56,54 @@ export const UPDATE_REDEEMABLE = gql`
       name
       img
       cost
+    }
+  }
+`
+export const CREATE_CHORE = gql`
+  mutation createChore(
+    $name: String!
+    $img: String!
+    $description: String
+    $pts: Int!
+  ) {
+    createChore(name: $name, img: $img, description: $description, pts: $pts) {
+      id
+      name
+      img
+      description
+      pts
+    }
+  }
+`
+
+export const DELETE_CHORE = gql`
+  mutation deleteChore($id: ID!) {
+    deleteChore(id: $id) {
+      id
+    }
+  }
+`
+
+export const UPDATE_CHORE = gql`
+  mutation updateChore(
+    $id: ID!
+    $name: String
+    $img: String
+    $description: String
+    $pts: Int
+  ) {
+    updateRedeemable(
+      id: $id
+      name: $name
+      img: $img
+      description: $description
+      pts: $pts
+    ) {
+      id
+      name
+      description
+      img
+      pts
     }
   }
 `

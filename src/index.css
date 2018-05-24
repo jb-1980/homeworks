@@ -2,6 +2,10 @@ html {
   background: #f5f5f5;
 }
 
+body {
+  margin: 0;
+}
+
 .chore-table {
   width: 100%;
   border-collapse: collapse;

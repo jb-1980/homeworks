@@ -7,7 +7,7 @@ import IconSelector from "./components/icon-selector"
 import { Query, Mutation } from "react-apollo"
 
 import { GET_REDEEMABLES } from "./apollo/queries"
-import { SAVE_REDEEMABLE } from "./apollo/mutations"
+import { CREATE_REDEEMABLE } from "./apollo/mutations"
 
 ReactModal.setAppElement("#root")
 
@@ -107,29 +107,29 @@ export default class Redeemables extends React.Component {
           </div>
           <div style={{ float: "right" }}>
             <Mutation
-              mutation={SAVE_REDEEMABLE}
-              update={(cache, { data: { addRedeemable } }) => {
+              mutation={CREATE_REDEEMABLE}
+              update={(cache, { data: { createRedeemable } }) => {
                 const { redeemables } = cache.readQuery({
                   query: GET_REDEEMABLES,
                 })
                 cache.writeQuery({
                   query: GET_REDEEMABLES,
-                  data: { redeemables: [...redeemables, addRedeemable] },
+                  data: { redeemables: [...redeemables, createRedeemable] },
                 })
               }}
               onCompleted={this.resetState}
             >
-              {(addRedeemable, { data }) => (
+              {(createRedeemable, { data }) => (
                 <button
-                  onClick={() => {
-                    addRedeemable({
+                  onClick={() =>
+                    createRedeemable({
                       variables: {
                         name: this.state.addedRedeemableName,
                         img: this.state.selectedIcon,
                         cost: this.state.cost,
                       },
                     })
-                  }}
+                  }
                 >
                   Save
                 </button>

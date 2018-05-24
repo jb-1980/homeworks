@@ -8,3 +8,24 @@ export const themeColors = {
   textOnPrimary: "#000",
   textOnSecondary: "#fafafa",
 }
+
+// helper function to find the date of Sunday of the current week
+export const getCurrentSunday = (d = new Date()) => {
+  const day = d.getDay()
+  // Subtracting number of days from current date will get us to Sunday.
+  const diff = d.getDate() - day
+
+  return new Date(d.setDate(diff))
+}
+
+export const getPreviousWeek = currentWeek => {
+  const currentDate = new Date(currentWeek)
+  const currentSunday = getCurrentSunday(currentDate)
+  return new Date(currentSunday.setDate(currentSunday.getDate() - 7))
+}
+
+export const getNextWeek = currentWeek => {
+  const currentDate = new Date(currentWeek)
+  const currentSunday = getCurrentSunday(currentDate)
+  return new Date(currentSunday.setDate(currentSunday.getDate() + 7))
+}

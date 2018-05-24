@@ -43,3 +43,44 @@ export const GET_REDEEMABLE = gql`
     }
   }
 `
+export const GET_CHORES = gql`
+  {
+    chores {
+      id
+      name
+      description
+      img
+      pts
+    }
+  }
+`
+
+export const GET_CHORE = gql`
+  query chores($id: ID!) {
+    chores(id: $id) {
+      id
+      name
+      description
+      img
+      pts
+    }
+  }
+`
+
+export const GET_ASSIGNMENTS = gql`
+  query assignments($memberId: ID!, $date: Float) {
+    assignments(memberId: $memberId, date: $date) {
+      date
+      assignments {
+        id
+        chore {
+          id
+          name
+          pts
+        }
+        date
+        completed
+      }
+    }
+  }
+`
