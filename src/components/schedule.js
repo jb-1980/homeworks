@@ -1,15 +1,16 @@
 import React from "react"
 import { Query } from "react-apollo"
-
+import { StyleSheet, css } from "aphrodite"
+import ScheduleRow from "./schedule-row"
 import { GET_ASSIGNMENTS } from "../apollo/queries"
-import { getCurrentSunday } from "../utils"
+import { getCurrentSunday, getPreviousWeek, getNextWeek } from "../utils"
 
 export default ({ member }) => (
   <Query
     query={GET_ASSIGNMENTS}
     variables={{
       memberId: member.id,
-      // date: getCurrentSunday().getTime(),
+      date: getCurrentSunday().getTime(),
     }}
   >
     {({ loading, error, data, refetch }) => {
@@ -18,6 +19,12 @@ export default ({ member }) => (
 
       const assignments =
         data.assignments === null ? {} : data.assignments.assignments
+
+      // should be timestamp of Sunday of the week's data
+      const date = data.assignments === null ? null : data.assignments.date
+      const weekDates = [0, 1, 2, 3, 4, 5, 6].map(
+        i => date + i * 24 * 3600 * 1000
+      )
 
       const assignmentByDate = assignments.reduce(
         (acc, assignment) => {
@@ -44,6 +51,8 @@ export default ({ member }) => (
             case 6:
               acc.sat.push(assignment)
               return acc
+            default:
+              return acc
           }
         },
         { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
@@ -59,11 +68,11 @@ export default ({ member }) => (
                 }}
               >
                 <span
+                  className={css(styles.dateChanger)}
                   onClick={() =>
                     refetch({
-                      variables: {
-                        startDate: this.getPreviousWeekTime(assignments.date),
-                      },
+                      date: getPreviousWeek(date),
+                      memberId: member.id,
                     })
                   }
                 >
@@ -71,11 +80,11 @@ export default ({ member }) => (
                 </span>
                 <span>Day</span>
                 <span
+                  className={css(styles.dateChanger)}
                   onClick={() =>
                     refetch({
-                      variables: {
-                        startDate: this.getNextWeekTime(assignments.date),
-                      },
+                      memberId: member.id,
+                      date: getNextWeek(date).getTime(),
                     })
                   }
                 >
@@ -86,65 +95,50 @@ export default ({ member }) => (
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Mon</td>
-              <td>
-                {assignmentByDate.mon.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Tue</td>
-              <td>
-                {assignmentByDate.tue.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Wed</td>
-              <td>
-                {assignmentByDate.wed.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Thur</td>
-              <td>
-                {assignmentByDate.thu.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Fri</td>
-              <td>
-                {assignmentByDate.fri.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Sat</td>
-              <td>
-                {assignmentByDate.sat.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
-            <tr>
-              <td>Sun</td>
-              <td>
-                {assignmentByDate.sun.map(assignment => (
-                  <div key={assignment.id}>{assignment.chore.name}</div>
-                ))}
-              </td>
-            </tr>
+            <ScheduleRow
+              assignments={assignmentByDate.sun}
+              date={weekDates[0]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.mon}
+              date={weekDates[1]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.tue}
+              date={weekDates[2]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.wed}
+              date={weekDates[3]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.thu}
+              date={weekDates[4]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.fri}
+              date={weekDates[5]}
+              member={member}
+            />
+            <ScheduleRow
+              assignments={assignmentByDate.sat}
+              date={weekDates[6]}
+              member={member}
+            />
           </tbody>
         </table>
       )
     }}
   </Query>
 )
+
+const styles = StyleSheet.create({
+  dateChanger: {
+    cursor: "pointer",
+  },
+})

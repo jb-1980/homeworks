@@ -22,6 +22,15 @@ export const UPDATE_MEMBER = gql`
   }
 `
 
+export const UPDATE_MEMBER_POINTS = gql`
+  mutation updateMemberPts($id: ID!, $pts: Int!) {
+    updateMemberPts(id: $id, pts: $pts) {
+      id
+      pts
+    }
+  }
+`
+
 export const DELETE_MEMBER = gql`
   mutation deleteMember($id: ID!) {
     deleteMember(id: $id) {
@@ -92,7 +101,7 @@ export const UPDATE_CHORE = gql`
     $description: String
     $pts: Int
   ) {
-    updateRedeemable(
+    updateChore(
       id: $id
       name: $name
       img: $img
@@ -104,6 +113,38 @@ export const UPDATE_CHORE = gql`
       description
       img
       pts
+    }
+  }
+`
+
+export const CREATE_ASSIGNMENT = gql`
+  mutation createAssignment($choreId: ID!, $memberId: ID!, $date: Float!) {
+    createAssignment(choreId: $choreId, memberId: $memberId, date: $date) {
+      id
+      chore {
+        id
+        name
+        pts
+      }
+      date
+      completed
+    }
+  }
+`
+
+export const TOGGLE_ASSIGNMENT_COMPLETE = gql`
+  mutation updateAssignment($id: ID!, $completed: Boolean!) {
+    updateAssignment(id: $id, completed: $completed) {
+      id
+      completed
+    }
+  }
+`
+
+export const DELETE_ASSIGNMENT = gql`
+  mutation deleteAssignment($id: ID!) {
+    deleteAssignment(id: $id) {
+      id
     }
   }
 `

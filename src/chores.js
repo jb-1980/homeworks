@@ -5,6 +5,7 @@ import { StyleSheet, css } from "aphrodite"
 import { themeColors } from "./utils"
 import { GET_CHORES } from "./apollo/queries"
 import { CREATE_CHORE } from "./apollo/mutations"
+import Chore from "./components/chore"
 
 ReactModal.setAppElement("#root")
 
@@ -43,17 +44,7 @@ export default class Chores extends React.Component {
           if (error) return <div>Error fetching data!</div>
 
           const chores = data.chores === null ? [] : data.chores
-          return chores.map(chore => (
-            <div className={css(styles.memberContainer)}>
-              <img
-                src={"https://via.placeholder.com/100x120" /*chore.img*/}
-                alt={chore.img}
-                style={{ width: 100, height: 120 }}
-              />
-              <div>{chore.name}</div>
-              <div className={css(styles.pts)}>{chore.pts}</div>
-            </div>
-          ))
+          return chores.map(chore => <Chore key={chore.id} chore={chore} />)
         }}
       </Query>
     )
@@ -169,31 +160,6 @@ const styles = StyleSheet.create({
     alignItems: "space-around",
     marginTop: 20,
     marginBottom: 20,
-  },
-  memberContainer: {
-    width: 200,
-    height: 120,
-    display: "flex",
-    position: "relative",
-    alignItems: "center",
-    background: themeColors.primaryLight,
-    boxShadow: "rgba(0, 0, 0, 0.05) 0px 1px 3px 0px",
-    borderRadius: 5,
-    userSelect: "none",
-    cursor: "pointer",
-    margin: 20,
-  },
-  pts: {
-    position: "absolute",
-    left: 160,
-    top: -5,
-    background: themeColors.secondary,
-    color: themeColors.textOnSecondary,
-    boxShadow: "rgba(0, 0, 0, 0.15) 0px 1px 3px 0px",
-    border: "thin solid white",
-    borderRadius: 15,
-    minWidth: 30,
-    padding: "2px 8px",
   },
   addFamilyButton: {
     background: themeColors.secondary,
