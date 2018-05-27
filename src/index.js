@@ -3,14 +3,14 @@ import { render } from "react-dom"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import ApolloClient from "apollo-boost"
 import { ApolloProvider } from "react-apollo"
-import "./index.css"
+import "./client/index.css"
 
-import Navbar from "./navbar"
-import Family from "./family"
-import Chores from "./chores"
-import Redeemables from "./redeemables"
-import Redeemable from "./components/redeemable"
-import Member from "./components/member"
+import Navbar from "./client/navbar"
+import Family from "./client/family"
+import Chores from "./client/chores"
+import Redeemables from "./client/redeemables"
+import Redeemable from "./client/components/redeemable"
+import Member from "./client/components/member"
 
 const styles = {
   fontFamily: "sans-serif",
@@ -18,10 +18,10 @@ const styles = {
   background: "inherit",
 }
 
-const { protocol, hostname } = window.location
+const { protocol, hostname, port } = window.location
 
 const client = new ApolloClient({
-  uri: `${protocol}//${hostname}:4000/graphql`,
+  uri: `${protocol}//${hostname}:${port}/graphql`,
 })
 
 const App = () => (
