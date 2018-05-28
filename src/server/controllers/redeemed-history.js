@@ -10,7 +10,6 @@ exports.getRedeemedForMember = memberId =>
 
 exports.createRedeemed = (memberId, redeemableId, date) => {
   return Member.findById(memberId).then(member => {
-    console.log(member.pts)
     return Redeemable.findById(redeemableId).then(redeemable => {
       member.pts -= redeemable.cost
       if (member.pts < 0)
@@ -23,7 +22,6 @@ exports.createRedeemed = (memberId, redeemableId, date) => {
         member: member.id,
         redeemable: redeemable.id,
       }).then(redeemed => {
-        console.log(member.pts)
         redeemed.member = member
         redeemed.redeemable = redeemable
         return redeemed
