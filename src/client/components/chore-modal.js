@@ -59,6 +59,8 @@ export default class ChoreModal extends React.Component {
                 "trash-can",
                 "washing-machine",
                 "window-squeegee",
+                "lawnmower",
+                "brush-teeth",
               ]}
               clickHandler={this.updateChoreImg}
             />

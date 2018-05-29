@@ -71,6 +71,8 @@ export default class EditChoreModal extends React.Component {
                 "socks",
                 "pink-towell-on-rack",
                 "vacuum",
+                "lawnmower",
+                "brush-teeth",
               ]}
               initialIcon={this.state.choreImg}
               clickHandler={this.updateChoreImg}

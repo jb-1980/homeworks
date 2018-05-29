@@ -2,7 +2,11 @@
   "name": "homeworks",
   "version": "1.0.0",
   "description": "A simple app I am building to help schedule family chores",
-  "keywords": ["react", "chores", "family"],
+  "keywords": [
+    "react",
+    "chores",
+    "family"
+  ],
   "main": "src/client/index.js",
   "dependencies": {
     "aphrodite": "2.2.0",
@@ -14,6 +18,7 @@
     "graphql-tag": "^2.9.2",
     "mongoose": "^5.1.2",
     "morgan": "^1.9.0",
+    "nodemon": "^1.17.5",
     "react": "16.3.2",
     "react-apollo": "^2.1.4",
     "react-dom": "16.3.2",

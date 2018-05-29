@@ -18,7 +18,7 @@ morgan.token("body", req => JSON.stringify(req.body, null, 2))
 app.use(morgan(":method :url :status :response-time :body"))
 app.use(express.static("build"))
 
-app.get("/", (req, res) => res.sendFile("/index.html"))
+app.get("/*", (req, res) => res.sendFile("/index.html"))
 registerServer({ server, app })
 
 server.listen().then(({ url }) => {
