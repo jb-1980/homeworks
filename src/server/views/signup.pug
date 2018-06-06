@@ -1,0 +1,31 @@
+doctype html
+html
+  head
+    style
+      include ./styles.css
+  body
+    .container
+      h1.logo Homeworks
+      h2.text-center Signup
+      // LOGIN FORM
+      if message.length > 0
+        h3.text-danger #{message}
+      form.form-signin(method='post', action='/signup')
+        .form-group
+          label.control-label(for='id_firstname') Firstname
+          input#id_firstname.form-control(maxlength='30', name='firstname', type='text', placeholder="first")
+        .form-group
+          label.control-label(for='id_lastname') Lastname
+          input#id_lastname.form-control(maxlength='30', name='lastname', type='text', placeholder="last")
+        .form-group
+          label.control-label(for='id_username') Username
+          input#id_username.form-control(maxlength='30', name='username', type='text', placeholder="username")
+        .form-group.label-floating
+          label.control-label(for='id_password') Password
+          input#id_password.form-control(maxlength='128', name='password', type='password', placeholder="password")
+        button.btn-login(type='submit') Sign up
+      hr
+      div
+          p
+            | Already have an account? 
+            a(href='/login') Login
