@@ -1,7 +1,7 @@
 import React from "react"
 import ReactModal from "react-modal"
 import { StyleSheet, css } from "aphrodite"
-import { themeColors } from "../utils"
+import { themeColors, imageStrings } from "../utils"
 import IconSelector from "./icon-selector"
 import { Mutation } from "react-apollo"
 
@@ -13,9 +13,9 @@ ReactModal.setAppElement("#root")
 export default class ChoreModal extends React.Component {
   defaultState = {
     choreName: "",
-    choreImg: "placeholder",
+    choreImg: "broom",
     choreDescription: "",
-    chorePts: 0,
+    chorePts: 0
   }
 
   state = this.defaultState
@@ -40,29 +40,15 @@ export default class ChoreModal extends React.Component {
         isOpen={this.props.modalOpen}
         onRequestClose={this.props.onRequestClose}
         style={{
-          content: { width: 250, margin: "auto", position: "initial" },
+          content: { width: 250, margin: "auto", position: "initial" }
         }}
       >
         <div className={css(styles.modalContainer)}>
           <div className={css(styles.profileContainer)}>
             <IconSelector
-              icons={[
-                "broom",
-                "dish-and-soap",
-                "dustpan",
-                "iron",
-                "laundry-soap",
-                "pot",
-                "soap",
-                "sponge",
-                "towell-on-hangar",
-                "trash-can",
-                "washing-machine",
-                "window-squeegee",
-                "lawnmower",
-                "brush-teeth",
-              ]}
+              icons={imageStrings.chores}
               clickHandler={this.updateChoreImg}
+              initialIcon={this.state.choreImg}
             />
             <input
               type="text"
@@ -91,11 +77,11 @@ export default class ChoreModal extends React.Component {
               mutation={CREATE_CHORE}
               update={(cache, { data: { createChore } }) => {
                 const { chores } = cache.readQuery({
-                  query: GET_CHORES,
+                  query: GET_CHORES
                 })
                 cache.writeQuery({
                   query: GET_CHORES,
-                  data: { chores: [...chores, createChore] },
+                  data: { chores: [...chores, createChore] }
                 })
               }}
               onCompleted={() => {
@@ -111,8 +97,8 @@ export default class ChoreModal extends React.Component {
                         name: this.state.choreName,
                         img: this.state.choreImg,
                         description: this.state.choreDescription,
-                        pts: this.state.chorePts,
-                      },
+                        pts: this.state.chorePts
+                      }
                     })
                   }
                   className={css(styles.modalButton)}
@@ -141,14 +127,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     height: "90%",
-    fontFamily: "Roboto",
+    fontFamily: "Roboto"
   },
   profileContainer: {
     width: 250,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   input: {
     width: "100%",
@@ -159,7 +145,7 @@ const styles = StyleSheet.create({
     boxSizing: "border-box",
     color: "#616161",
     fontSize: "1.1rem",
-    textAlign: "center",
+    textAlign: "center"
   },
   modalButton: {
     border: "thin solid",
@@ -170,6 +156,6 @@ const styles = StyleSheet.create({
     color: themeColors.textOnSecondary,
     background: themeColors.secondary,
     fontFamily: "Roboto",
-    fontSize: "1.2rem",
-  },
+    fontSize: "1.2rem"
+  }
 })

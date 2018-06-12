@@ -1,46 +1,54 @@
-const Redeemable = require("../models/redeemable")
+const User = require("../models/user")
 
-exports.getRedeemables = () =>
-  Redeemable.find({}, (err, redeemables) => {
-    if (err) throw err
+exports.getRedeemables = userid =>
+  User.findById(userid)
+    .then(user => user.redeemables)
+    .catch(err => err)
 
-    return redeemables
-  })
+exports.getRedeemable = (userid, redeemableid) =>
+  User.findById(userid)
+    .then(user => user.redeemables.id(redeemableid))
+    .catch(err => err)
 
-exports.getRedeemable = id =>
-  Redeemable.findById(id, (err, redeemable) => {
-    if (err) return err
+exports.createRedeemable = (userid, name, img, cost) =>
+  User.findById(userid)
+    .then(user => {
+      user.redeemables.push({ name, img, cost })
+      return user.save()
+    })
+    .then(user => user.redeemables[user.redeemables.length - 1])
+    .catch(err => err)
 
-    return redeemable
-  })
+exports.deleteRedeemable = (userid, redeemableid) =>
+  User.findById(userid)
+    .then(user => {
+      user.redeemables.id(redeemableid).remove()
+      return user.save()
+    })
+    .then(() => ({ id: redeemableid }))
+    .catch(err => err)
 
-exports.createRedeemable = (name, img, cost) =>
-  Redeemable.create({ name, img, cost })
+exports.updateRedeemable = (userid, redeemableid, name, img, cost) =>
+  User.findById(userid)
+    .then(user => {
+      const redeemable = user.redeemables.id(redeemableid)
+      redeemable.set({
+        name: name ? name : redeemable.name,
+        img: img ? img : redeemable.img,
+        cost: cost !== undefined ? cost : redeemable.pts,
+      })
+      return user.save()
+    })
+    .then(user => user.redeemables.id(redeemableid))
+    .catch(err => err)
 
-exports.deleteRedeemable = id => {
-  return Redeemable.findByIdAndRemove(id)
-}
+exports.updateRedeemableCost = (userid, redeemableid, cost) =>
+  User.findById(userid)
+    .then(user => {
+      const redeemable = user.redeemables.id(redeemableid)
+      redeemable.set({ cost })
 
-exports.updateRedeemable = (id, name, img, cost) =>
-  Redeemable.findByIdAndUpdate(
-    id,
-    { name, img, cost },
-    { new: true },
-    (err, redeemable) => {
-      if (err) return err
-
-      return redeemable
-    }
-  )
-
-exports.updateRedeemableCost = (id, cost) =>
-  Redeemable.findByIdAndUpdate(
-    id,
-    { cost },
-    { new: true },
-    (err, redeemable) => {
-      if (err) return err
-
-      return redeemable
-    }
-  )
+      return user.save()
+    })
+    .then(user => user.redeemables.id(redeemableid))
+    .catch(err => err)

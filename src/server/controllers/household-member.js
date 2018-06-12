@@ -1,41 +1,54 @@
-const Member = require("../models/household-member")
+const User = require("../models/user")
 
-exports.getMembers = () =>
-  Member.find({}, (err, members) => {
-    if (err) throw err
+exports.getMembers = userid =>
+  User.findById(userid)
+    .then(user => user.householdMembers)
+    .catch(err => err)
 
-    return members
-  })
+exports.getMember = (userid, memberid) =>
+  User.findById(userid)
+    .then(user => user.householdMembers.id(memberid))
+    .catch(err => err)
 
-exports.getMember = id =>
-  Member.findById(id, (err, member) => {
-    if (err) return err
+exports.createMember = (userid, name, img) =>
+  User.findById(userid)
+    .then(user => {
+      user.householdMembers.push({ name, img, pts: 0 })
+      return user.save()
+    })
+    .then(user => user.householdMembers[user.householdMembers.length - 1])
+    .catch(err => err)
 
-    return member
-  })
+exports.deleteMember = (userid, memberid) =>
+  User.findById(userid)
+    .then(user => {
+      user.householdMembers.id(memberid).remove()
+      return user.save()
+    })
+    .then(() => ({ id: memberid }))
+    .catch(err => err)
 
-exports.createMember = (name, img, pts) => Member.create({ name, img, pts })
+exports.updateMember = (userid, memberid, name, img, pts) =>
+  User.findById(userid)
+    .then(user => {
+      const member = user.householdMembers.id(memberid)
+      member.set({
+        name: name ? name : member.name,
+        img: img ? img : member.img,
+        pts: pts !== undefined ? pts : member.pts,
+      })
+      return user.save()
+    })
+    .then(user => user.householdMembers.id(memberid))
+    .catch(err => err)
 
-exports.deleteMember = id => {
-  return Member.findByIdAndRemove(id)
-}
+exports.updateMemberPts = (userid, memberid, pts) =>
+  User.findById(userid)
+    .then(user => {
+      const member = user.householdMembers.id(memberid)
+      member.set({ pts: member.pts + pts })
 
-exports.updateMember = (id, name, img, pts) =>
-  Member.findByIdAndUpdate(
-    id,
-    { name, img, pts },
-    { new: true },
-    (err, member) => {
-      if (err) return err
-
-      return member
-    }
-  )
-
-exports.updateMemberPts = (id, pts) => {
-  return Member.findById(id).then(member => {
-    member.pts += pts
-    member.save()
-    return member
-  })
-}
+      return user.save()
+    })
+    .then(user => user.householdMembers.id(memberid))
+    .catch(err => err)

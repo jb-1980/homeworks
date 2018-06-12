@@ -15,15 +15,21 @@ import Member from "./client/components/member"
 const styles = {
   fontFamily: "sans-serif",
   textAlign: "center",
-  background: "inherit",
+  background: "inherit"
 }
 
 const { protocol, hostname, port } = window.location
 
 const client = new ApolloClient({
-  uri: `${protocol}//${hostname}:${port}/graphql`,
+  uri: `${protocol}//${hostname}:${port}/graphql`
 })
 
+window.__HOMEWORKS_USER__ = {
+  firstname: "Joseph",
+  lastname: "Gilgen",
+  username: "jgilgen",
+  username_slug: "jgilgen"
+}
 const App = () => (
   <ApolloProvider client={client}>
     <div style={styles} id="app">

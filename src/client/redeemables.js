@@ -1,6 +1,5 @@
 import React from "react"
 import ReactModal from "react-modal"
-import { Link } from "react-router-dom"
 import { StyleSheet, css } from "aphrodite"
 import { themeColors } from "./utils"
 import IconSelector from "./components/icon-selector"
@@ -20,7 +19,7 @@ export default class Redeemables extends React.Component {
     addedRedeemableName: "",
     selectedIcon: "money_bag",
     cost: 0,
-    editingRedeemable: {},
+    editingRedeemable: {}
   }
 
   state = this.defaultState
@@ -34,7 +33,7 @@ export default class Redeemables extends React.Component {
   setEditingRedeemable = editingRedeemable =>
     this.setState(
       () => ({
-        editingRedeemable,
+        editingRedeemable
       }),
       this.openEditModal()
     )
@@ -82,7 +81,7 @@ export default class Redeemables extends React.Component {
         <ReactModal
           isOpen={this.state.modalOpen}
           style={{
-            content: { width: 250, margin: "auto", position: "initial" },
+            content: { width: 250, margin: "auto", position: "initial" }
           }}
           onRequestClose={this.handleCloseModal}
         >
@@ -113,11 +112,11 @@ export default class Redeemables extends React.Component {
                 mutation={CREATE_REDEEMABLE}
                 update={(cache, { data: { createRedeemable } }) => {
                   const { redeemables } = cache.readQuery({
-                    query: GET_REDEEMABLES,
+                    query: GET_REDEEMABLES
                   })
                   cache.writeQuery({
                     query: GET_REDEEMABLES,
-                    data: { redeemables: [...redeemables, createRedeemable] },
+                    data: { redeemables: [...redeemables, createRedeemable] }
                   })
                 }}
                 onCompleted={this.resetState}
@@ -129,8 +128,8 @@ export default class Redeemables extends React.Component {
                         variables: {
                           name: this.state.addedRedeemableName,
                           img: this.state.selectedIcon,
-                          cost: this.state.cost,
-                        },
+                          cost: this.state.cost
+                        }
                       })
                     }
                     className={css(styles.modalButton)}
@@ -169,14 +168,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "space-around",
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 20
   },
   profileContainer: {
     width: 250,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   addFamilyButton: {
     background: themeColors.secondary,
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 50,
     fontSize: "1rem",
-    color: themeColors.textOnSecondary,
+    color: themeColors.textOnSecondary
   },
   modalContainer: {
     display: "flex",
@@ -193,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     height: "90%",
-    fontFamily: "Roboto",
+    fontFamily: "Roboto"
   },
   input: {
     width: "100%",
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
     boxSizing: "border-box",
     color: "#616161",
     fontSize: "1.1rem",
-    textAlign: "center",
+    textAlign: "center"
   },
   modalButton: {
     border: "thin solid",
@@ -215,6 +214,6 @@ const styles = StyleSheet.create({
     color: themeColors.textOnSecondary,
     background: themeColors.secondary,
     fontFamily: "Roboto",
-    fontSize: "1.2rem",
-  },
+    fontSize: "1.2rem"
+  }
 })

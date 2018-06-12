@@ -37,90 +37,65 @@ const {
 exports.resolvers = {
   Query: {
     // household queries
-    household: () => getMembers(),
-    member: (root, { id }) => getMember(id),
+    household: (root, _, { user }) => getMembers(user.id),
+    member: (root, { id }, { user }) => getMember(user.id, id),
 
     // redeemable queries
-    redeemables: () => getRedeemables(),
-    redeemable: (root, { id }) => getRedeemable(id),
+    redeemables: (root, _, { user }) => getRedeemables(user.id),
+    redeemable: (root, { id }, { user }) => getRedeemable(user.id, id),
 
     // chore queries
-    chores: () => getChores(),
-    chore: (root, { id }) => getChore(id),
+    chores: (root, _, { user }) => getChores(user.id),
+    chore: (root, { id }, { user }) => getChore(user.id, id),
 
     // assignment queries
-    assignments: (root, { memberId, date }) =>
-      getAssignments(memberId, date).then(assignments => {
+    assignments: (root, { memberId, date }, { user }) =>
+      getAssignments(user.id, memberId, date).then(assignments => {
         return {
           date,
           assignments,
         }
       }),
-    assignment: (root, { id }) => getAssignment(id),
+    assignment: (root, { id }, { user }) => getAssignment(user.id, id),
 
     // redeemed queries
-    redeemed: (root, { memberId }) => getRedeemedForMember(memberId),
+    redeemed: (root, { memberId }, { user }) =>
+      getRedeemedForMember(user.id, memberId),
   },
   Mutation: {
     // Member resolvers
-    createMember: (root, { name, img }) =>
-      createMember(name, img, 0).then(member => ({
-        id: member.id,
-        name: member.name,
-        img: member.img,
-        pts: member.pts,
-      })),
-    deleteMember: (root, { id }) =>
-      deleteMember(id).then(member => ({ id: member.id })),
-    updateMember: (root, { id, name, img, pts }) =>
-      updateMember(id, name, img, pts),
-    updateMemberPts: (root, { id, pts }) => updateMemberPts(id, pts),
+    createMember: (root, { name, img }, { user }) =>
+      createMember(user.id, name, img, 0),
+    deleteMember: (root, { id }, { user }) => deleteMember(user.id, id),
+    updateMember: (root, { id, name, img, pts }, { user }) =>
+      updateMember(user.id, id, name, img, pts),
+    updateMemberPts: (root, { id, pts }, { user }) =>
+      updateMemberPts(user.id, id, pts),
 
     // redeemable resolvers
-    createRedeemable: (root, { name, img, cost }) =>
-      createRedeemable(name, img, cost).then(redeemable => ({
-        id: redeemable.id,
-        name: redeemable.name,
-        img: redeemable.img,
-        cost: redeemable.cost,
-      })),
-    deleteRedeemable: (root, { id }) =>
-      deleteRedeemable(id).then(redeemable => ({ id: redeemable.id })),
-    updateRedeemable: (root, { id, name, img, cost }) =>
-      updateRedeemable(id, name, img, cost),
+    createRedeemable: (root, { name, img, cost }, { user }) =>
+      createRedeemable(user.id, name, img, cost),
+    deleteRedeemable: (root, { id }, { user }) => deleteRedeemable(user.id, id),
+    updateRedeemable: (root, { id, name, img, cost }, { user }) =>
+      updateRedeemable(user.id, id, name, img, cost),
 
     // chore resolvers
-    createChore: (root, { name, img, description, pts }) =>
-      createChore(name, img, description, pts).then(chore => ({
-        id: chore.id,
-        name: chore.name,
-        description: chore.description,
-        img: chore.img,
-        pts: chore.pts,
-      })),
-    deleteChore: (root, { id }) =>
-      deleteChore(id).then(chore => ({ id: chore.id })),
-    updateChore: (root, { id, name, description, img, pts }) =>
-      updateChore(id, name, description, img, pts),
+    createChore: (root, { name, img, description, pts }, { user }) =>
+      createChore(user.id, name, img, description, pts),
+    deleteChore: (root, { id }, { user }) => deleteChore(user.id, id),
+    updateChore: (root, { id, name, description, img, pts }, { user }) =>
+      updateChore(user.id, id, name, description, img, pts),
 
     // assignment resolvers
-    createAssignment: (root, { date, memberId, choreId }) =>
-      createAssignment(date, memberId, choreId).then(assignment => {
-        return {
-          id: assignment.id,
-          chore: assignment.chore,
-          member: assignment.member,
-          date: assignment.date.getTime(),
-          completed: assignment.completed,
-        }
-      }),
+    createAssignment: (root, { date, memberId, choreId }, { user }) =>
+      createAssignment(user.id, date, memberId, choreId),
     deleteAssignment: (root, { id }) =>
       deleteAssignment(id).then(assignment => assignment),
-    updateAssignment: (root, { id, completed }) =>
-      updateAssignment(id, completed),
+    updateAssignment: (root, { id, completed }, { user }) =>
+      updateAssignment(user.id, id, completed),
 
     // redeemed resolvers
-    createRedeemed: (root, { memberId, redeemableId, date }) =>
-      createRedeemed(memberId, redeemableId, date),
+    createRedeemed: (root, { memberId, redeemableId, date }, { user }) =>
+      createRedeemed(user.id, memberId, redeemableId, date),
   },
 }

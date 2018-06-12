@@ -7,7 +7,29 @@ export const themeColors = {
   secondaryDark: "#006978",
   textOnPrimary: "#000",
   textOnSecondary: "#fafafa",
-  danger: "#E53935",
+  danger: "#E53935"
+}
+
+export const imageStrings = {
+  members: [],
+  chores: [
+    "broom",
+    "dish-and-soap",
+    "dustpan",
+    "iron",
+    "laundry-soap",
+    "pot",
+    "soap",
+    "sponge",
+    "towell-on-hangar",
+    "trash-can",
+    "washing-machine",
+    "window-squeegee",
+    "lawnmower",
+    "brush-teeth",
+    "peacemaker"
+  ],
+  redeemables: []
 }
 
 // helper function to find the date of Sunday of the current week
@@ -46,7 +68,7 @@ export const formatDate = date => {
     "Sep",
     "Oct",
     "Nov",
-    "Dec",
+    "Dec"
   ]
 
   const day = days[date.getDay()]

@@ -51,13 +51,14 @@ export default class EditProfileModal extends React.Component {
       >
         <Mutation
           mutation={UPDATE_MEMBER}
-          update={(cache, { data: { updateMember } }) =>
+          update={(cache, { data: { updateMember } }) => {
+            console.log("data", updateMember)
             cache.writeQuery({
               query: GET_MEMBER,
               variables: { id: this.props.memberId },
               data: { member: updateMember },
             })
-          }
+          }}
           onCompleted={this.handleCloseModal}
         >
           {(updateMember, { loading, error, data }) => (
@@ -141,7 +142,6 @@ export default class EditProfileModal extends React.Component {
                     mutation={DELETE_MEMBER}
                     variables={{ id: member.id }}
                     update={(cache, { data: { deleteMember } }) => {
-                      console.log(deleteMember)
                       const { household } = cache.readQuery({
                         query: GET_HOUSEHOLD,
                       })

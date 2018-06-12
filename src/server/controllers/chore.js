@@ -1,41 +1,49 @@
-const Chore = require("../models/chore")
+const User = require("../models/user")
 
-exports.getChores = () =>
-  Chore.find({}, (err, chores) => {
-    if (err) throw err
+exports.getChores = userid =>
+  User.findById(userid)
+    .then(user => user.chores)
+    .catch(err => err)
 
-    return chores
-  })
+exports.getChore = (userid, choreid) =>
+  User.findById(userid)
+    .then(user => user.chores.id(choreid))
+    .catch(err => err)
 
-exports.getChore = id =>
-  Chore.findById(id, (err, chore) => {
-    if (err) return err
+exports.createChore = (userid, name, img, description, pts) =>
+  User.findById(userid)
+    .then(user => {
+      user.chores.push({
+        name,
+        img,
+        description,
+        pts,
+      })
+      return user.save()
+    })
+    .then(user => user.chores[user.chores.length - 1])
+    .catch(err => err)
 
-    return chore
-  })
+exports.deleteChore = (userid, choreid) =>
+  User.findById(userid)
+    .then(user => {
+      user.chores.id(choreid).remove()
+      return user.save()
+    })
+    .then(() => ({ id: choreid }))
+    .catch(err => err)
 
-exports.createChore = (name, img, description, pts) =>
-  Chore.create({ name, img, description, pts })
-
-exports.deleteChore = id => {
-  return Chore.findByIdAndRemove(id)
-}
-
-exports.updateChore = (id, name, description, img, pts) =>
-  Chore.findByIdAndUpdate(
-    id,
-    { name, img, pts },
-    { new: true },
-    (err, chore) => {
-      if (err) return err
-
-      return chore
-    }
-  )
-
-exports.updateChoreCost = (id, pts) =>
-  Chore.findByIdAndUpdate(id, { pts }, { new: true }, (err, chore) => {
-    if (err) return err
-
-    return chore
-  })
+exports.updateChore = (userid, choreid, name, description, img, pts) =>
+  User.findById(userid)
+    .then(user => {
+      const chore = user.chores.id(choreid)
+      chore.set({
+        name: name ? name : chore.name,
+        description: description ? description : chore.description,
+        img: img ? img : chore.img,
+        pts: pts !== undefined ? pts : chore.pts,
+      })
+      return user.save()
+    })
+    .then(user => user.chores.id(choreid))
+    .catch(err => err)

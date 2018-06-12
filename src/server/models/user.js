@@ -1,16 +1,21 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt-nodejs")
+const Member = require("./household-member")
+const Chore = require("./chore")
+const Redeemable = require("./redeemable")
 
 // define the schema for our user model
 const userSchema = mongoose.Schema({
-  householdMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Member" }],
+  householdMembers: [Member],
+  chores: [Chore],
+  redeemables: [Redeemable],
   local: {
     firstname: String,
     lastname: String,
     username: String,
     username_slug: String,
-    password: String
-  }
+    password: String,
+  },
   // TODO: Generate other auth methods
   // facebook:{
   //     id:String,

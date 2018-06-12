@@ -1,70 +1,94 @@
+const mongoose = require("mongoose")
+const User = require("../models/user")
 const Assignments = require("../models/assignment")
 const Member = require("../models/household-member")
 const Chore = require("../models/chore")
 
-exports.getAssignments = (memberId, date) => {
-  if (date) {
-    let startDate = new Date(date)
-    let endDate = new Date(date + 7 * 24 * 3600 * 1000)
-    return Assignments.find({
-      member: memberId,
-      date: { $gte: startDate, $lte: endDate },
+const choreModel = mongoose.model("Chore", Chore)
+const memberModel = mongoose.model("Member", Member)
+
+exports.getAssignments = (userid, memberId, date) =>
+  User.findById(userid)
+    .then(user => {
+      if (date) {
+        let startDate = new Date(date)
+        let endDate = new Date(date + 7 * 24 * 3600 * 1000)
+        return Assignments.find({
+          member: memberId,
+          date: { $gte: startDate, $lte: endDate },
+        }).then(assignments =>
+          assignments.map(assignment => ({
+            id: assignment.id,
+            chore: user.chores.id(assignment.chore),
+            member: user.householdMembers.id(assignment.member),
+            date: assignment.date,
+            completed: assignment.completed,
+          }))
+        )
+      }
+
+      return Assignments.find({ member: memberId }).then(assignments =>
+        assignments.map(assignment => ({
+          id: assignment.id,
+          chore: user.chores.id(assignment.chore),
+          member: user.householdMembers.id(assignment.member),
+          date: assignment.date,
+          completed: assignment.completed,
+        }))
+      )
     })
-      .populate("chore")
-      .populate("member")
-      .then(assignments => assignments)
-  }
+    .catch(err => err)
 
-  return Assignments.find({ member: memberId })
-    .populate("chore")
-    .populate("member")
-    .then(assignments => assignments)
-}
+exports.getAssignment = (userid, id) =>
+  User.findById(userid)
+    .then(user =>
+      Assignments.findById(id).then(assignment => ({
+        id: assignment.id,
+        chore: user.chores.id(assignment.chore),
+        member: user.householdMembers.id(assignment.member),
+        date: assignment.date,
+        completed: assignment.completed,
+      }))
+    )
+    .catch(err => err)
 
-exports.getAssignment = id =>
-  Assignments.findById(id)
-    .populate("chore")
-    .populate("member")
-    .then(assignment => assignment)
-
-exports.createAssignment = (date, memberId, choreId) => {
-  return Member.findById(memberId).then(member => {
-    return Chore.findById(choreId).then(chore => {
-      return Assignments.create({
+exports.createAssignment = (userid, date, memberId, choreId) =>
+  User.findById(userid)
+    .then(user =>
+      Assignments.create({
         date,
-        member: member.id,
-        chore: chore.id,
-      }).then(assignment => {
-        assignment.member = member
-        assignment.chore = chore
-        return assignment
-      })
-    })
-  })
-}
+        member: mongoose.mongo.ObjectId(memberId),
+        chore: mongoose.mongo.ObjectId(choreId),
+      }).then(assignment => ({
+        id: assignment.id,
+        chore: user.chores.id(choreId),
+        member: user.householdMembers.id(memberId),
+        date: assignment.date,
+        completed: assignment.completed,
+      }))
+    )
+    .catch(err => err)
 
 exports.deleteAssignment = id => Assignments.findByIdAndRemove(id)
 
-exports.updateAssignment = (id, completed) =>
-  Assignments.findByIdAndUpdate(
-    id,
-    { completed },
-    { new: true },
-    (err, assignment) => {
-      if (err) return err
+exports.updateAssignment = (userid, id, completed) =>
+  User.findById(userid)
+    .then(user =>
+      Assignments.findByIdAndUpdate(
+        id,
+        { completed },
+        { new: true },
+        (err, assignment) => {
+          if (err) return err
 
-      return assignment
-    }
-  )
-
-exports.updateAssignmentCost = (id, cost) =>
-  Assignments.findByIdAndUpdate(
-    id,
-    { cost },
-    { new: true },
-    (err, assignment) => {
-      if (err) return err
-
-      return assignment
-    }
-  )
+          return {
+            id: assignment.id,
+            date: assignment.date,
+            chore: user.chores.id(assignment.chore),
+            member: user.householdMembers.id(assignment.member),
+            completed: assignment.completed,
+          }
+        }
+      )
+    )
+    .catch(err => err)
