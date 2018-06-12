@@ -81,30 +81,27 @@ app.get("/logout", (req, res) => {
   res.redirect("/")
 })
 
-app.get(
-  "*",
-  /*isLoggedIn,*/ (req, res) => {
-    const filePath = path.resolve(__dirname, "./build", "index.html")
-    // const user = {
-    //   firstname: req.user.local.firstname,
-    //   lastname: req.user.local.lastname,
-    //   username: req.user.local.username,
-    //   username_slug: req.user.local.username_slug,
-    // }
-    // use in developer environment
-    const user = {
-      firstname: "Joseph",
-      lastname: "Gilgen",
-      username: "jgilgen",
-      username_slug: "jgilgen",
-    }
-    fs.readFile(filePath, "utf8", (err, data) => {
-      if (err) throw err
-
-      res.send(data.replace("$$USER$$", `'${JSON.stringify(user)}'`))
-    })
+app.get("*", isLoggedIn, (req, res) => {
+  const filePath = path.resolve(__dirname, "./build", "index.html")
+  const user = {
+    firstname: req.user.local.firstname,
+    lastname: req.user.local.lastname,
+    username: req.user.local.username,
+    username_slug: req.user.local.username_slug,
   }
-)
+  // use in developer environment
+  // const user = {
+  //   firstname: "Joseph",
+  //   lastname: "Gilgen",
+  //   username: "jgilgen",
+  //   username_slug: "jgilgen",
+  // }
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) throw err
+
+    res.send(data.replace("$$USER$$", `'${JSON.stringify(user)}'`))
+  })
+})
 
 registerServer({ server, app, path: "/graphql" })
 
