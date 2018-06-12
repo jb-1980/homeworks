@@ -23,7 +23,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => ({
-    user: { id: "5b1bf711a74cda0e61974ef5" },
+    user: req.user,
   }),
 })
 
