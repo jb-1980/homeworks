@@ -19,7 +19,13 @@ const {
   SESSION_SECRET
 } = require("./src/server/config")
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(
+  MONGODB_URI,
+  {
+    server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+  }
+)
 
 configPassport(passport)
 
