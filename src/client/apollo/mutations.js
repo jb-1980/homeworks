@@ -159,9 +159,8 @@ export const CREATE_REDEEMED = gql`
       date
       redeemable {
         id
-      }
-      member {
-        id
+        name
+        cost
       }
     }
   }

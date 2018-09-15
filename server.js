@@ -13,18 +13,30 @@ const session = require("express-session")
 const flash = require("connect-flash")
 const passport = require("passport")
 const configPassport = require("./src/server/config/passport")
+const {
+  MONGODB_URI,
+  IS_PRODUCTION,
+  SESSION_SECRET
+} = require("./src/server/config")
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/graphql"
 mongoose.connect(MONGODB_URI)
 
 configPassport(passport)
+
+const devUser = {
+  id: "5b9d288c5d6cf3276775a2cd",
+  firstname: "Joseph",
+  lastname: "Gilgen",
+  username: "jgilgen",
+  username_slug: "jgilgen"
+}
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => ({
-    user: req.user,
-  }),
+    user: IS_PRODUCTION ? req.user : devUser
+  })
 })
 
 const app = express()
@@ -32,9 +44,9 @@ app.use(bodyParser.urlencoded({ extended: false })) // parse application/x-www-f
 app.use(bodyParser.json())
 app.use(
   session({
-    secret: "6qgGTS623NI8o39Nqo65lawwpR4Z5twp",
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
   })
 )
 app.use(flash())
@@ -56,7 +68,7 @@ app
     passport.authenticate("local-login", {
       successRedirect: "/",
       failureRedirect: "/login",
-      failureFlash: true,
+      failureFlash: true
     })
   )
 
@@ -65,14 +77,14 @@ app
   .get((req, res) =>
     res.render("signup", {
       message: req.flash("message"),
-      user: req.user,
+      user: req.user
     })
   )
   .post(
     passport.authenticate("local-signup", {
       successRedirect: "/",
       failureRedirect: "/signup",
-      failureFlash: true,
+      failureFlash: true
     })
   )
 
@@ -83,19 +95,19 @@ app.get("/logout", (req, res) => {
 
 app.get("*", isLoggedIn, (req, res) => {
   const filePath = path.resolve(__dirname, "./build", "index.html")
-  const user = {
-    firstname: req.user.local.firstname,
-    lastname: req.user.local.lastname,
-    username: req.user.local.username,
-    username_slug: req.user.local.username_slug,
-  }
-  // use in developer environment
-  // const user = {
-  //   firstname: "Joseph",
-  //   lastname: "Gilgen",
-  //   username: "jgilgen",
-  //   username_slug: "jgilgen",
-  // }
+  const user = IS_PRODUCTION
+    ? {
+        firstname: req.user.local.firstname,
+        lastname: req.user.local.lastname,
+        username: req.user.local.username,
+        username_slug: req.user.local.username_slug
+      }
+    : {
+        firstname: "Joseph",
+        lastname: "Gilgen",
+        username: "jgilgen",
+        username_slug: "jgilgen"
+      }
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) throw err
 

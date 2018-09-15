@@ -35,12 +35,15 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
+    "start-server": "NODE_ENV=production node server.js",
     "start-dev-serv": "nodemon server.js",
-    "start-dev": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:4000/"
+  "proxy": "http://localhost:4000/",
+  "prettier": {
+    "semi": false
+  }
 }

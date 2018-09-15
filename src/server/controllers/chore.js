@@ -1,4 +1,5 @@
 const User = require("../models/user")
+const Assignment = require("../models/assignment")
 
 exports.getChores = userid =>
   User.findById(userid)
@@ -30,6 +31,7 @@ exports.deleteChore = (userid, choreid) =>
       user.chores.id(choreid).remove()
       return user.save()
     })
+    .then(() => Assignment.deleteOne({ chore: choreid }))
     .then(() => ({ id: choreid }))
     .catch(err => err)
 

@@ -5,7 +5,7 @@ import { themeColors, formatDate } from "../utils"
 import { Query, Mutation } from "react-apollo"
 import Card from "./card"
 
-import { GET_REDEEMABLES, GET_REDEEMED } from "../apollo/queries"
+import { GET_MEMBER, GET_REDEEMABLES, GET_REDEEMED } from "../apollo/queries"
 import { CREATE_REDEEMED } from "../apollo/mutations"
 
 ReactModal.setAppElement("#root")
@@ -65,11 +65,38 @@ export default class RedeemModal extends React.Component {
                         redeemableId: redeemable.id,
                         date: new Date().getTime(),
                       }}
+                      update={(cache, { data: { createRedeemed } }) => {
+                        const { redeemed } = cache.readQuery({
+                          query: GET_REDEEMED,
+                          variables: {
+                            memberId: member.id,
+                          },
+                        })
+
+                        cache.writeQuery({
+                          query: GET_MEMBER,
+                          variables: { id: member.id },
+                          data: {
+                            member: {
+                              ...member,
+                              pts: member.pts - createRedeemed.redeemable.cost,
+                            },
+                          },
+                        })
+                        cache.writeQuery({
+                          query: GET_REDEEMED,
+                          variables: {
+                            memberId: member.id,
+                          },
+                          data: {
+                            redeemed: [...redeemed, createRedeemed],
+                          },
+                        })
+                      }}
                       onCompleted={this.props.onRequestClose}
                     >
                       {(createRedeemed, { data, loading, error }) => {
                         if (error) {
-                          console.dir(error)
                           const errorMessage = error.graphQLErrors[0].message
                           return (
                             <div>
@@ -104,8 +131,11 @@ export default class RedeemModal extends React.Component {
             {({ data, loading, error }) => {
               if (loading) return <div>Fetching redeemed history...</div>
               if (error) return <div>Error retrieving history!</div>
-              console.log(data.redeemed)
-              const history = data.redeemed === null ? [] : data.redeemed
+
+              const history =
+                data.redeemed === null
+                  ? []
+                  : [...data.redeemed].sort((a, b) => b.date - a.date)
               return (
                 <table className="chore-table">
                   <thead>
