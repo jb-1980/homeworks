@@ -1,6 +1,5 @@
 const express = require("express")
-const { ApolloServer, gql } = require("apollo-server")
-const { registerServer } = require("apollo-server-express")
+const { ApolloServer, gql } = require("apollo-server-express")
 const mongoose = require("mongoose")
 const morgan = require("morgan")
 const bodyParser = require("body-parser")
@@ -10,6 +9,7 @@ const { resolvers } = require("./src/server/resolvers")
 const { typeDefs } = require("./src/server/schema")
 const { isLoggedIn } = require("./src/server/utils")
 const session = require("express-session")
+const MemoryStore = require("memorystore")(session)
 const flash = require("connect-flash")
 const passport = require("passport")
 const configPassport = require("./src/server/config/passport")
@@ -21,10 +21,7 @@ const {
 
 mongoose.connect(
   MONGODB_URI,
-  {
-    server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-    replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
-  }
+  { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true }
 )
 
 configPassport(passport)
@@ -52,7 +49,10 @@ app.use(
   session({
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new MemoryStore({
+      checkPeriod: 86400000
+    })
   })
 )
 app.use(flash())
@@ -121,8 +121,8 @@ app.get("*", isLoggedIn, (req, res) => {
   })
 })
 
-registerServer({ server, app, path: "/graphql" })
+server.applyMiddleware({ app })
 
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`)
-})
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+)

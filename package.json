@@ -19,6 +19,7 @@
     "express-session": "^1.15.6",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
+    "memorystore": "^1.6.0",
     "mongoose": "^5.2.15",
     "morgan": "^1.9.1",
     "nodemon": "^1.18.4",
